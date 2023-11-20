@@ -1,0 +1,33 @@
+import boto3
+import json
+
+def lambda_handler(event, context):
+    # AWS IoTのクライアントを初期化
+    iot_client = boto3.client('iot-data')
+
+    # トピック名
+    topic_name = "test/topic"
+
+    # パブリッシュするメッセージ
+    message = {
+        "message": "Hello!"
+    }
+
+    # メッセージをJSON形式に変換
+    payload = json.dumps(message)
+
+    try:
+        # トピックを公開
+        response = iot_client.publish(
+            topic=topic_name,
+            payload=payload
+        )
+
+        print(f"Published to topic '{topic_name}' with message: {payload}")
+        
+        # 必要に応じて、成功時の処理を記述
+
+    except Exception as e:
+        print(f"Error publishing to topic '{topic_name}': {str(e)}")
+
+        # 必要に応じて、エラー時の処理を記述

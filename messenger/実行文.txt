@@ -1,0 +1,1 @@
+python3 pubsub.py --endpoint ap8dgx8zxedew-ats.iot.us-east-1.amazonaws.com --root-ca AmazonRootCA1.pem --cert 4ad9139fc521e7aaa0ac4885244b6cf012469f7ebe9f58f990c33017ea514c1f-certificate.pem.crt --key 4ad9139fc521e7aaa0ac4885244b6cf012469f7ebe9f58f990c33017ea514c1f-private.pem.key
