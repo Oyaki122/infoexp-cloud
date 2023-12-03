@@ -5,7 +5,7 @@ url = "http://klipperO.local"
 
 def make_client():
     try:
-        client = OctoRest(url=url, apikey="YouShallNotPass")
+        client = OctoRest(url=url, apikey="123")
         if client is None:
             raise Exception("client is None")
         return client
@@ -38,11 +38,12 @@ def get_printer_info():
 
 def main():
     c = make_client()
-    for k in c.files()['files']:
-        print(k['name'])
+    # for k in c.files()['files']:
+        # print(k['name'])
+    # c.home()
 
-    with open("./test.stl") as f:
-        c.upload(f)
+    # with open("bency.gcode") as f:
+    print(c.upload("bency.gcode", print=True))
 
 
 if __name__ == "__main__":
