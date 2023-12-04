@@ -1,7 +1,8 @@
-import { Button, Stack, TextField, styled } from "@mui/material";
+import { Button, Stack, TextField, Typography, styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { createRef, useState } from "react";
+import axios from "axios";
 
 const VisuallyHiddenInput = styled("input")({
 	clip: "rect(0 0 0 0)",
@@ -17,28 +18,29 @@ const VisuallyHiddenInput = styled("input")({
 
 export default function Upload() {
 	const fileInputRef = createRef<HTMLInputElement>();
-	const [filename, setFilename] = useState("");
 	const [user, setUser] = useState("hoge");
-	const send: React.MouseEventHandler = async (event) => {
+	const [filename, setFilename] = useState("");
+
+	const createFormData = async () => {
 		const file = fileInputRef.current?.files?.[0];
-		if (!file) return;
-		event.preventDefault();
-		const submitData = new FormData();
-
-		submitData.append("user", user);
-		submitData.append("file", fileInputRef?.current?.files?.[0] as Blob);
-
-		await fetch(
+		if (!file) throw new Error("ファイルが選択されていません");
+		const formData = new FormData();
+		formData.append("file", file);
+		formData.append("user", user);
+		return formData;
+	};
+	const send: React.MouseEventHandler = async () => {
+		const formData = await createFormData();
+		const res = await axios.post(
 			"https://qg6wdvbjvh.execute-api.us-east-1.amazonaws.com/1/uploadFiles",
+			formData,
 			{
-				method: "POST",
-				body: submitData,
 				headers: {
-					"content-type": "multipart/form-data",
+					"Content-Type": "multipart/form-data",
 				},
-				mode: "cors",
 			},
 		);
+		console.log(res);
 	};
 
 	return (
@@ -49,26 +51,44 @@ export default function Upload() {
 				alignItems: "center",
 			}}
 		>
+			<Stack spacing={2} sx={{ width: "100%" }}>
+				<Typography variant="h4">アップロード</Typography>
+				<Box sx={{ flexGrow: 1 }} />
+			</Stack>
 			<Stack
 				spacing={2}
 				sx={{
 					maxWidth: "500px",
 				}}
 			>
-				<TextField required id="outlined-required" label="ユーザー名" />
-				<Button
-					component="label"
-					variant="contained"
-					startIcon={<CloudUploadIcon />}
-				>
-					ファイル選択
-					<VisuallyHiddenInput
-						type="file"
-						ref={fileInputRef}
-						accept=".gcode"
-						// onChange={(e) => e.}
-					/>
-				</Button>
+				<TextField
+					required
+					id="outlined-required"
+					label="ユーザー名"
+					value={user}
+					onChange={(e) => setUser(e.currentTarget.value)}
+				/>
+				<Box sx={{ display: "flex", flexDirection: "row" }}>
+					<Button
+						component="label"
+						variant="contained"
+						startIcon={<CloudUploadIcon />}
+					>
+						ファイル選択
+						<VisuallyHiddenInput
+							type="file"
+							ref={fileInputRef}
+							accept=".gcode"
+							onChange={(e) =>
+								e.currentTarget.files &&
+								setFilename(e.currentTarget.files[0].name)
+							}
+						/>
+					</Button>
+					<Box>
+						<Typography>{filename}</Typography>
+					</Box>
+				</Box>
 				<Button variant="contained" onClick={send}>
 					アップロード
 				</Button>

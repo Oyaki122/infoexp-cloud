@@ -14,6 +14,7 @@ import List from "./List";
 import { useState } from "react";
 import { CssBaseline, createTheme } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
+import Assign from "./Assign";
 
 function App() {
 	const [tab, setTab] = useState("1");
@@ -43,6 +44,7 @@ function App() {
 							>
 								<Tab label="アップロード" value="1" />
 								<Tab label="ファイルリスト" value="2" />
+								<Tab label="割り当て" value="3" />
 							</TabList>
 						</Box>
 						<TabPanel value="1">
@@ -50,6 +52,9 @@ function App() {
 						</TabPanel>
 						<TabPanel value="2">
 							<List />
+						</TabPanel>
+						<TabPanel value="3">
+							<Assign />
 						</TabPanel>
 					</TabContext>
 				</Box>

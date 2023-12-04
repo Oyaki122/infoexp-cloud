@@ -10,19 +10,21 @@ import axios, { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
-const FileSchema = z.object({
+const AssignSchema = z.object({
 	filename: z.string(),
-	user: z.string(),
-	uid: z.string(),
+	fileId: z.string(),
+	assignedUser: z.string(),
+	assigneduserId: z.string(),
+	uploadUser: z.string(),
 });
-const FileArraySchema = z.array(FileSchema);
+const FileArraySchema = z.array(AssignSchema);
 
-export default function List() {
-	const [files, setFiles] = useState<z.infer<typeof FileSchema>[]>([]);
-	const getQueueFiles = async () => {
+export default function Assign() {
+	const [files, setFiles] = useState<z.infer<typeof AssignSchema>[]>([]);
+	const getAssignment = async () => {
 		const res: AxiosResponse<{ statuscode: number; body: string }> =
 			await axios.get(
-				"https://qg6wdvbjvh.execute-api.us-east-1.amazonaws.com/1/list",
+				"https://qg6wdvbjvh.execute-api.us-east-1.amazonaws.com/1/assignment",
 			);
 		const list = JSON.parse(res.data.body);
 		console.log(list);
@@ -31,12 +33,13 @@ export default function List() {
 	};
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
-		getQueueFiles();
+		getAssignment();
 	}, []);
 
-	const assign = async () => {
+	const print = async (fileid: string, filename: string) => {
 		const res = await axios.post(
-			"https://qg6wdvbjvh.execute-api.us-east-1.amazonaws.com/1/assignment",
+			"https://exxpe7exxi.execute-api.us-east-1.amazonaws.com/default/infoexp-start-print",
+			{ fileid, filename },
 		);
 		console.log(res);
 	};
@@ -47,11 +50,8 @@ export default function List() {
 				<Stack direction={"row"} spacing={2} sx={{ width: "100%" }}>
 					<Typography variant="h4">アップロードファイル一覧</Typography>
 					<Box sx={{ flexGrow: 1 }} />
-					<Button variant="contained" onClick={getQueueFiles}>
+					<Button variant="contained" onClick={getAssignment}>
 						更新
-					</Button>
-					<Button variant="contained" onClick={assign}>
-						割り当て実行
 					</Button>
 				</Stack>
 				<TableContainer component={Paper}>
@@ -59,22 +59,29 @@ export default function List() {
 						<TableHead>
 							<TableRow>
 								<TableCell>ファイル名</TableCell>
+								<TableCell>割り当てられたユーザー</TableCell>
 								<TableCell>アップロードユーザー</TableCell>
-								<TableCell>UID</TableCell>
+								<TableCell>印刷開始</TableCell>
 							</TableRow>
 						</TableHead>
 						{
 							<TableBody>
 								{files.map((file) => (
 									<TableRow
-										key={file.uid}
+										key={file.fileId}
 										sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
 									>
 										<TableCell component="th" scope="file">
 											{file.filename}
 										</TableCell>
-										<TableCell>{file.user}</TableCell>
-										<TableCell>{file.uid}</TableCell>
+										<TableCell>{file.assignedUser}</TableCell>
+										<TableCell>{file.uploadUser}</TableCell>
+										<TableCell>
+											<Button
+												variant="contained"
+												onClick={() => print(file.fileId, file.filename)}
+											/>
+										</TableCell>
 									</TableRow>
 								))}
 							</TableBody>
