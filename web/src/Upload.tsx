@@ -51,6 +51,10 @@ export default function Upload() {
 				alignItems: "center",
 			}}
 		>
+			<Stack spacing={2} sx={{ width: "100%" }}>
+				<Typography variant="h4">アップロード</Typography>
+				<Box sx={{ flexGrow: 1 }} />
+			</Stack>
 			<Stack
 				spacing={2}
 				sx={{
