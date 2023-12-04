@@ -17,8 +17,29 @@ const VisuallyHiddenInput = styled("input")({
 
 export default function Upload() {
 	const fileInputRef = createRef<HTMLInputElement>();
-  const [filename, setFilename] = useState("");
-	const send: React.MouseEventHandler = () => {};
+	const [filename, setFilename] = useState("");
+	const [user, setUser] = useState("hoge");
+	const send: React.MouseEventHandler = async (event) => {
+		const file = fileInputRef.current?.files?.[0];
+		if (!file) return;
+		event.preventDefault();
+		const submitData = new FormData();
+
+		submitData.append("user", user);
+		submitData.append("file", fileInputRef?.current?.files?.[0] as Blob);
+
+		await fetch(
+			"https://qg6wdvbjvh.execute-api.us-east-1.amazonaws.com/1/uploadFiles",
+			{
+				method: "POST",
+				body: submitData,
+				headers: {
+					"content-type": "multipart/form-data",
+				},
+				mode: "cors",
+			},
+		);
+	};
 
 	return (
 		<Box
@@ -41,10 +62,12 @@ export default function Upload() {
 					startIcon={<CloudUploadIcon />}
 				>
 					ファイル選択
-					<VisuallyHiddenInput type="file" ref={fileInputRef} accept=".gcode"
-            onChange={(e) => e.} 
-          />
-
+					<VisuallyHiddenInput
+						type="file"
+						ref={fileInputRef}
+						accept=".gcode"
+						// onChange={(e) => e.}
+					/>
 				</Button>
 				<Button variant="contained" onClick={send}>
 					アップロード
