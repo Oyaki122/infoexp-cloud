@@ -31,18 +31,15 @@ def lambda_handler(event, context):
     uid = uuid.uuid4()
     f = fs['file']
     filename = f.filename
-    bucket.put_object(Body=f.value, Key=DIRECTORY+str(uid))
+    bucket.put_object(Body=f.value, Key=DIRECTORY + str(uid))
 
     table = dynamo.Table('infoexp-queue-db')
     table.put_item(
         Item={
             "uid": str(uid),
             "filename": filename,
-            "user": user
-        }
-    )
+            "user": user,
+            "filesize": fp.getbuffer().nbytes
+        })
 
-    return {
-        'statusCode': 200,
-        'body': json.dumps('success')
-    }
+    return {'statusCode': 200, 'body': json.dumps('success')}

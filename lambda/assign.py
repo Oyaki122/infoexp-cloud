@@ -7,11 +7,12 @@ import itertools
 def lambda_handler(event, context):
     dynamo = boto3.resource('dynamodb')
     queue = dynamo.Table('infoexp-queue-db')
-    queue = list(map(lambda x: x["uid"], queue.scan()['Items']))
-
+    queue = list(map(lambda x: {'uid': x["uid"], 'size': x['filesize']}, queue.scan()['Items']))
+    
     users = dynamo.Table('infoexp-users')
     users = list(map(lambda x: x['uid'], users.scan()['Items']))
-
+    
+    
     assign = dynamo.Table('infoexp-assign')
     scan = assign.scan()
     with assign.batch_writer() as batch:
@@ -24,9 +25,12 @@ def lambda_handler(event, context):
             )
 
     dist = distribute_files(queue, users)
-
+    
     for i in dist:
         assign.put_item(Item=i)
+    
+
+    # s3.put_object(Bucket=s3_bucket_name, Key=files_key, Body=json.dumps(files))
 
     return {
         'statusCode': 200,
@@ -36,18 +40,12 @@ def lambda_handler(event, context):
 
 def distribute_files(files, users):
 
-    files_per_user = math.ceil(len(files) / len(users))
-    user_files = {}
-    for i in range(len(users)):
-        start_idx = i * files_per_user
-        end_idx = start_idx + files_per_user
-        user_files[users[i]] = files[start_idx:end_idx]
-
+            
+    users = [{"uid": i, "size_sum": 0} for i in users]
     result = []
-    for i in user_files:
-        for j in user_files[i]:
-            result.append({
-                "user": i,
-                "file": j
-            })
+    for i in files:
+        users.sort(key=lambda x: x["size_sum"])
+        users[0]["size_sum"] += i["size"]
+        result.append({"file": i["uid"], "user": users[0]["uid"]})
+
     return result
