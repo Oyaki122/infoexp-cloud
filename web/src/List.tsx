@@ -42,7 +42,7 @@ export default function List() {
 	};
 
 	return (
-		<Box sx={{ width: "100%" }}>
+		<Box sx={{ width: "100%", maxWidth: " 1000px", margin: "0 auto" }}>
 			<Stack spacing={2}>
 				<Stack direction={"row"} spacing={2} sx={{ width: "100%" }}>
 					<Typography variant="h4">アップロードファイル一覧</Typography>

@@ -45,10 +45,10 @@ export default function Assign() {
 	};
 
 	return (
-		<Box sx={{ width: "100%" }}>
+		<Box sx={{ width: "100%", maxWidth: "1000px", margin: "0 auto" }}>
 			<Stack spacing={2}>
 				<Stack direction={"row"} spacing={2} sx={{ width: "100%" }}>
-					<Typography variant="h4">アップロードファイル一覧</Typography>
+					<Typography variant="h4">割り当て一覧</Typography>
 					<Box sx={{ flexGrow: 1 }} />
 					<Button variant="contained" onClick={getAssignment}>
 						更新
@@ -79,8 +79,11 @@ export default function Assign() {
 										<TableCell>
 											<Button
 												variant="contained"
+												// disabled={true}
 												onClick={() => print(file.fileId, file.filename)}
-											/>
+											>
+												印刷
+											</Button>
 										</TableCell>
 									</TableRow>
 								))}
